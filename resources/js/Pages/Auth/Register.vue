@@ -1,0 +1,43 @@
+<script setup lang="ts">
+import { Head } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3'
+import TextInput from '../Components/TextInput.vue';
+
+
+const form = useForm({
+    name: null, 
+    email: null,
+    password: null,
+    password_confirmation: null,
+});
+
+const submit = () => {
+    form.post('/register', {
+        onError: () => form.reset('password', 'password_confirmation'),
+    })
+    console.log("test");
+};
+</script>
+
+<template>
+    <Head :title="` | ${$page.component}`" />
+    <h1 class="title">Register</h1>
+
+    <div class="container">
+        <div class="row">
+            <form @submit.prevent="submit" class="col-12">
+                <TextInput name="name" v-model="form.name" :message="form.errors.name"/>  
+
+                <TextInput name="email" v-model="form.email" type="email" :message="form.errors.email"/>  
+
+                <TextInput name="password" v-model="form.password" type="password" :message="form.errors.password"/>  
+
+                <TextInput name="confirm password" type="password" v-model="form.password_confirmation"/>  
+                <div>
+                    <p>Already a user<a href="#">Login</a></p>
+                    <button class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
