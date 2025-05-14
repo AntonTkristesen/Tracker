@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { useForm } from '@inertiajs/vue3'
 import TextInput from '../Components/TextInput.vue';
+import Button from 'primevue/button';
 
 
 const form = useForm({
@@ -22,7 +23,7 @@ const submit = () => {
 
     <div class="container">
         <div class="row">
-            <form @submit.prevent="submit" class="col-12">
+            <form @submit.prevent="submit" class="col-6">
 
                 <TextInput name="email" v-model="form.email" type="email" :message="form.errors.email"/>  
 

@@ -1,7 +1,7 @@
 <template>
     <div class="col-3">
       <label>{{ name }}</label>
-      <input :type="type" v-model="model" />
+      <InputText :type="type" v-model="model" />
       <small>{{ message }}</small> <!-- Use passed message prop -->
     </div>
   </template>

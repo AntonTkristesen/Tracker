@@ -16,7 +16,7 @@
             <span class="navbar-toggler-icon"></span>
           </button>
 
-          <div class="collapse navbar-collapse" id="navbarNav">
+          <div id="navbarNav">
             <ul class="navbar-nav ms-auto">
               <li class="nav-item" v-if="$page.props.auth.user">
                 <Link :href="route('dashboard')" class="nav-link">Dashboard</Link>
@@ -24,6 +24,19 @@
               <li class="nav-item" v-if="$page.props.auth.user">
                 <Link :href="route('home')" class="nav-link">Home</Link>
               </li>
+              <li class="nav-item" v-if="$page.props.auth.user">
+                <Link :href="route('tracking')" class="nav-link">Tracking</Link>
+              </li>
+              <li class="nav-item" v-if="$page.props.auth.user">
+                <img
+                  :src="'/storage/' + $page.props.auth.user.avatar"
+                  alt="User Avatar"
+                  class="rounded-circle avatar-img"
+                />
+              </li>
+             
+
+
               <li class="nav-item" v-if="$page.props.auth.user">
                 <Link :href="route('logout')" method="post" as="button" class="nav-link">Logout</Link>
               </li>
@@ -48,3 +61,14 @@
 <script setup>
 // No logic needed here unless you want to add script-side customization
 </script>
+ 
+<style scoped>
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-left: 15px;
+  border: 1px solid #ccc;
+}
+
+</style>
