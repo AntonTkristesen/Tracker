@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -76,6 +77,26 @@ class AuthController extends Controller
     
         return redirect('/');
     }
-}   
 
+    public function update(Request $request): RedirectResponse
+    {
+        Log:info('update user', $request->all());
+        $user = Auth::user();
+
+        $fields = $request->validate([
+            'avatar' => ['file', 'nullable', 'max:2048'],
+            'name' => ['required', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            Storage::disk('public')->delete($user->avatar);
+            $fields['avatar'] = Storage::disk('public')->put('avatars', $request->avatar);
+        }
+
+        $user->update($fields);
+
+        return redirect()->route('home');
+    }   
+}
 

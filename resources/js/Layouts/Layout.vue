@@ -18,34 +18,37 @@
 
           <div id="navbarNav">
             <ul class="navbar-nav ms-auto">
-              <li class="nav-item" v-if="$page.props.auth.user">
+              <li class="nav-item" v-if="$page.props.auth && $page.props.auth.user">
                 <Link :href="route('dashboard')" class="nav-link">Dashboard</Link>
               </li>
-              <li class="nav-item" v-if="$page.props.auth.user">
+              <li class="nav-item" v-if="$page.props.auth && $page.props.auth.user">
                 <Link :href="route('home')" class="nav-link">Home</Link>
               </li>
-              <li class="nav-item" v-if="$page.props.auth.user">
+              <li class="nav-item" v-if="$page.props.auth && $page.props.auth.user">
                 <Link :href="route('tracking')" class="nav-link">Tracking</Link>
               </li>
-              <li class="nav-item" v-if="$page.props.auth.user">
+              <li
+                class="nav-item"
+                v-if="$page.props.auth && $page.props.auth.user && $page.props.auth.user.avatar"
+              >
                 <img
-                  :src="'/storage/' + $page.props.auth.user.avatar"
+                  :src="'/storage/' + ($page.props.auth.user.avatar || 'default.png')"
                   alt="User Avatar"
                   class="rounded-circle avatar-img"
                 />
               </li>
-             
-
-
-              <li class="nav-item" v-if="$page.props.auth.user">
+              <li class="nav-item" v-if="$page.props.auth && $page.props.auth.user">
                 <Link :href="route('logout')" method="post" as="button" class="nav-link">Logout</Link>
               </li>
-              <li class="nav-item" v-else>
-                <Link :href="route('register')" class="nav-link">Register</Link>
-              </li>
-              <li class="nav-item" v-else>
-                <Link :href="route('login')" class="nav-link">Login</Link>
-              </li>
+
+              <template v-if="!($page.props.auth && $page.props.auth.user)">
+                <li class="nav-item">
+                  <Link :href="route('register')" class="nav-link">Register</Link>
+                </li>
+                <li class="nav-item">
+                  <Link :href="route('login')" class="nav-link">Login</Link>
+                </li>
+              </template>
             </ul>
           </div>
         </div>
@@ -61,7 +64,7 @@
 <script setup>
 // No logic needed here unless you want to add script-side customization
 </script>
- 
+
 <style scoped>
 .avatar-img {
   width: 40px;
@@ -70,5 +73,4 @@
   margin-left: 15px;
   border: 1px solid #ccc;
 }
-
 </style>
