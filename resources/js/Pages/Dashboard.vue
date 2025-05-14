@@ -1,125 +1,120 @@
 <template>
-    <div class="p-d-flex p-jc-center p-mt-6">
-      <Card style="width: 360px">
-        <template #title>
-          <div class="p-d-flex p-ai-center p-flex-column">
-            <Avatar
-              :image="'/storage/' + $page.props.auth.user.avatar"
-              size="xlarge"
-              shape="circle"
-            />
-            <h3 class="p-mt-3">{{ $page.props.auth.user.name }}</h3>
-          </div>
-        </template>
-  
-        <template #content>
-          <!-- View Mode -->
-          <div v-if="!isEditing" class="p-mt-3">
-            <p><strong>Email:</strong> {{ $page.props.auth.user.email }}</p>
-            <p><strong>Location:</strong> {{ profile.location || 'Not specified' }}</p>
-            <p><strong>About:</strong> {{ profile.about || 'No information provided' }}</p>
-          </div>
-          
-          <!-- Edit Mode -->
-          <div v-else class="p-mt-3">
-            <div class="p-field p-mb-3">
-              <label for="location">Location</label>
-              <InputText 
-                id="location" 
-                v-model="profile.location" 
-                class="p-inputtext w-full"
-              />
-            </div>
+  <div class="p-d-flex p-jc-center p-mt-6">
+    <Card style="width: 360px">
+      <template #title>
+        <div class="p-d-flex p-ai-center p-flex-column">
+          <Avatar
+            :image="'/storage/' + page.props.auth.user.avatar"
+            size="xlarge"
+            shape="circle"
+          />
+          <h3 class="p-mt-3">{{ page.props.auth.user.name }}</h3>
+        </div>
+      </template>
+
+      <template #content>
+        <!-- View Mode -->
+        <div v-if="!isEditing" class="p-mt-3">
+          <p><strong>Email:</strong> {{ page.props.auth.user.email }}</p>
+        </div>
+
+        <!-- Edit Mode -->
+        <div v-else class="p-mt-3">
+          <div class="p-field p-mb-3">
+            <TextInput name="name" v-model="form.name" :message="form.errors.name"/>  
+
+            <TextInput name="email" v-model="form.email" type="email" :message="form.errors.email"/>
+
             <div class="p-field">
-              <label for="about">About</label>
-              <Textarea 
-                id="about" 
-                v-model="profile.about" 
-                rows="3" 
-                class="p-inputtext w-full"
+              <label for="avatar" class="p-text-secondary">Change Avatar</label>
+              <input
+                type="file"
+                id="avatar"
+                name="avatar"
+                @change="(e) => form.avatar = e.target.files[0]"
               />
+              <p v-if="form.errors.avatar" class="p-text-danger">{{ form.errors.avatar }}</p>
             </div>
           </div>
-        </template>
-  
-        <template #footer>
-          <div class="p-d-flex p-jc-end">
-            <!-- View Mode Button -->
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="p-d-flex p-jc-end">
+          <!-- View Mode Button -->
+          <Button 
+            v-if="!isEditing"
+            label="Edit Profile" 
+            icon="pi pi-user-edit" 
+            class="p-button-sm p-button-primary"
+            @click="toggleEdit"
+          />
+
+          <!-- Edit Mode Buttons -->
+          <div v-else class="p-d-flex p-jc-between w-full">
             <Button 
-              v-if="!isEditing"
-              label="Edit Profile" 
-              icon="pi pi-user-edit" 
-              class="p-button-sm p-button-primary"
-              @click="toggleEdit"
+              label="Cancel" 
+              icon="pi pi-times" 
+              class="p-button-sm p-button-secondary"
+              @click="cancelEdit"
             />
-            
-            <!-- Edit Mode Buttons -->
-            <div v-else class="p-d-flex p-jc-between w-full">
-              <Button 
-                label="Cancel" 
-                icon="pi pi-times" 
-                class="p-button-sm p-button-secondary"
-                @click="cancelEdit"
-              />
-              <Button 
-                label="Save" 
-                icon="pi pi-check" 
-                class="p-button-sm p-button-success"
-                @click="saveProfile"
-              />
-            </div>
+            <Button 
+              label="Save" 
+              icon="pi pi-check" 
+              class="p-button-sm p-button-success"
+              @click="saveProfile"
+            />
           </div>
-        </template>
-      </Card>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, reactive } from 'vue';
-  import { useForm } from '@inertiajs/vue3';
-  
-  // Edit mode state
-  const isEditing = ref(false);
-  
-  // Profile data (you can initialize with your user data)
-  const profile = reactive({
-    location: '',
-    about: '',
-  });
-  
-  // For Inertia form submission
-  const form = useForm({
-    location: '',
-    about: '',
-  });
-  
-  // Toggle edit mode
-  const toggleEdit = () => {
-    isEditing.value = true;
-  };
-  
-  // Cancel edit mode
-  const cancelEdit = () => {
+        </div>
+      </template>
+    </Card>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
+import TextInput from './Components/TextInput.vue';
+
+const page = usePage();
+
+
+const isEditing = ref(false);
+
+
+const profile = reactive({
+  name: page.props.auth.user.name,
+  email: page.props.auth.user.email,
+});
+
+const form = useForm({
+  name: profile.name,
+  email: profile.email,
+  avatar: null,
+});
+
+const toggleEdit = () => {
+  isEditing.value = true;
+};
+
+const cancelEdit = () => {
+  isEditing.value = false;
+};
+
+// const changeAvatar = (e) => {
+//   form.avatar = e.target.files[0];
+// };
+
+// Save profile changes
+const saveProfile = () => {
+  console.log(form.name);
+  form.post(route('dashboard.update'), {
+  onSuccess: () => {
     isEditing.value = false;
-    // Reset any unsaved changes
-    // You may want to reload from the server or restore from a backup
-  };
-  
-  // Save profile changes
-  const saveProfile = () => {
-    // Copy data from profile to form
-    form.location = profile.location;
-    form.about = profile.about;
-    
-    // Submit to your backend route
-    form.put(route('profile.update'), {
-      onSuccess: () => {
-        // Exit edit mode after successful update
-        isEditing.value = false;
-      },
-    });
-  };
-  </script>
+  },
+});
+};
+</script>
   
   <style scoped>
   .text-secondary {

@@ -20,7 +20,6 @@ const submit = () => {
     form.post('/register', {
         onError: () => form.reset('password', 'password_confirmation'),
     })
-    console.log("test");
 };
 </script>
 
