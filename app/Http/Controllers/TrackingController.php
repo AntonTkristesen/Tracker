@@ -23,19 +23,19 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'time' => 'required|integer|min:0',
             'description' => 'nullable|string|max:255',
+            'project_key' => 'nullable|string',
+            'task' => 'nullable|string',
         ]);
 
         // Create a new tracking record
         $tracking = new Tracking();
         $tracking->user_id = Auth::id();
         $tracking->time = $validated['time'];
+        $tracking->project_key = $request->project_key ?? null;
+        $tracking->task = $request->task ?? null;
         $tracking->description = $request->description ?? null;
         $tracking->save();
 
-        Log::info('Time tracked:', [
-            'user_id' => Auth::id(),
-            'time' => $validated['time']
-        ]);
 
         return response()->json([
             'message' => 'Time saved successfully',

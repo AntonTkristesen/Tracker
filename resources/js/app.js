@@ -13,8 +13,13 @@ import Button from "primevue/button"
 import InputText from 'primevue/inputtext';
 import Card from 'primevue/card';
 import Avatar from 'primevue/avatar';
-import Textarea from 'primevue/textarea'
-
+import Textarea from 'primevue/textarea';
+import Tree from 'primevue/tree'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import ToastService from 'primevue/toastservice'
+import Sidebar from 'primevue/sidebar';
+import Drawer from 'primevue/drawer';
 
 createInertiaApp({
   title: (title) => `My App - ${title}`,
@@ -31,8 +36,15 @@ createInertiaApp({
     .component('InputText', InputText)
     .component('Avatar', Avatar)
     .component('Textarea', Textarea)
+    .component('Tree', Tree)
+    .component('DataTable', DataTable)
+    .component('Column', Column)
+    .component('Toast', ToastService)
+    .component('Sidebar', Sidebar)
+    .component('Drawer', Drawer)
       .use(plugin)
       .use(ZiggyVue)
+      .use(ToastService)
       .component('Head', Head)
       .component('Link', Link)
       .component('Card', Card)
