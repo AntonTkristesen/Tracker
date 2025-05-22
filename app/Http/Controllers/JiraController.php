@@ -3,66 +3,47 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 use App\Models\Tracking;
+use App\Services\JiraSyncService;
+use App\Models\JiraIssue;
 
 class JiraController extends Controller
 {
+    protected $jira;
+
+    public function __construct(JiraSyncService $jira)
+    {
+        $this->jira = $jira;
+    }
+
     public function trackingView()
     {
-        $email = env('JIRA_EMAIL');
-        $token = env('JIRA_API_TOKEN');
-        $domain = env('JIRA_DOMAIN');
-
-        // Fetch Jira projects
-        $projectsResponse = Http::withBasicAuth($email, $token)
-            ->get("https://{$domain}/rest/api/3/project");
-
-        $projects = collect();
-
-        if ($projectsResponse->successful()) {
-            $projects = collect($projectsResponse->json())->map(function ($project) use ($email, $token, $domain) {
-                // Fetch issues for each project
-                $issuesResponse = Http::withBasicAuth($email, $token)
-                    ->get("https://{$domain}/rest/api/3/search", [
-                        'jql' => 'project = ' . $project['key'],
-                        'fields' => 'summary,key', // Add key to get issue identifiers
-                        'maxResults' => 100 // Increase the limit if needed
-                    ]);
-
-                $issues = collect();
-
-                if ($issuesResponse->successful()) {
-                    // Map issues to a more usable format
-                    $issues = collect($issuesResponse->json()['issues'])->map(function ($issue) {
-                        return [
-                            'id' => $issue['id'],
-                            'key' => $issue['key'],
-                            'summary' => $issue['fields']['summary']
-                        ];
-                    });
-                }
-
-                // Return the project with its issues
+        $projects = JiraIssue::all()
+            ->groupBy('project_key')
+            ->map(function ($issues, $key) {
                 return [
-                    'id' => $project['id'],
-                    'name' => $project['name'],
-                    'key' => $project['key'],
-                    'issues' => $issues,
+                    'key' => $key,
+                    'name' => $issues->first()->project_key, // Optional: Use separate projects table
+                    'id' => $issues->first()->project_id,
+                    'issues' => $issues->map(function ($issue) {
+                        return [
+                            'id' => $issue->issue_id,
+                            'key' => $issue->issue_key,
+                            'summary' => $issue->summary,
+                        ];
+                    })->values()
                 ];
             })->values();
-        }
-        
+    
         $trackings = Tracking::latest()->get();
-
-        // Return view via Inertia
+    
         return Inertia::render('Tracking', [
             'projects' => $projects,
             'trackings' => $trackings,
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -71,7 +52,7 @@ class JiraController extends Controller
             'task' => 'nullable|string',
             'description' => 'nullable|string|max:255',
         ]);
-        
+
         $tracking = new Tracking();
         $tracking->user_id = auth()->id();
         $tracking->time = $validated['time'];
@@ -79,16 +60,16 @@ class JiraController extends Controller
         $tracking->task = $validated['task'] ?? null;
         $tracking->description = $validated['description'] ?? null;
         $tracking->save();
-        
+
         return response()->json(['success' => true, 'tracking' => $tracking]);
     }
-    
+
     public function getUserTrackings()
     {
         $trackings = Tracking::where('user_id', auth()->id())
-                             ->latest()
-                             ->get();
-                             
+            ->latest()
+            ->get();
+
         return response()->json(['trackings' => $trackings]);
     }
 }
