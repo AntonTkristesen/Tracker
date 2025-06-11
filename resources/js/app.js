@@ -17,6 +17,7 @@ import Textarea from 'primevue/textarea';
 import Tree from 'primevue/tree'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import Calendar from 'primevue/calendar'
 import ToastService from 'primevue/toastservice'
 import Sidebar from 'primevue/sidebar';
 import Drawer from 'primevue/drawer';
@@ -39,6 +40,7 @@ createInertiaApp({
     .component('Tree', Tree)
     .component('DataTable', DataTable)
     .component('Column', Column)
+    .component('Calendar', Calendar)
     .component('Toast', ToastService)
     .component('Sidebar', Sidebar)
     .component('Drawer', Drawer)

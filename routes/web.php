@@ -29,6 +29,8 @@ Route::get('/user-trackings', [TrackingController::class, 'getUserTrackings']);
 
 Route::get('/tracking', [JiraController::class, 'trackingView'])->name('tracking');
 
+Route::inertia('/calendar', 'Calendar')->name('calendar');
+
 Route::inertia('/profile', 'Profile')->name('profile');
 
 
