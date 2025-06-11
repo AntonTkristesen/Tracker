@@ -47,7 +47,13 @@
                     <span>Tracking</span>
                   </Link>
                 </li>
-                
+                <li class="nav-item mx-1">
+                  <Link :href="route('calendar')" class="nav-link px-3 py-2 rounded-pill d-flex align-items-center">
+                    <i class="pi pi-calendar me-2 d-none d-sm-inline-block"></i>
+                    <span>Calendar</span>
+                  </Link>
+                </li>
+
                 <!-- User Menu - Using Vue-controlled dropdown instead of Bootstrap -->
                 <li class="nav-item ms-2 position-relative">
                   <button 
